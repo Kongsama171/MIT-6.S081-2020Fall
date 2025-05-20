@@ -92,10 +92,10 @@ sudo apt-get install clang-format
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "xv6build",
+      "label": "xv6debugbuild",
       "type": "shell",
       "isBackground": true,
-      "command": "make qemu-gdb",
+      "command": "make clean && make qemu-gdb",
       "problemMatcher": [
         {
           "pattern": [
@@ -113,6 +113,23 @@ sudo apt-get install clang-format
           }
         }
       ]
+    },
+    {
+      "label": "xv6build", // 任务的名称
+      "type": "shell", // 任务类型为 shell 命令
+      "command": "make clean && make qemu", // 要执行的命令，使用 && 串联
+      "options": {
+        "cwd": "${workspaceFolder}" // 设置工作目录为项目根目录
+      },
+      "group": {
+        "kind": "build", // 将此任务归类为构建任务
+        "isDefault": false // 可以设置为 true 使其成为默认构建任务 (可选)
+      },
+      "presentation": {
+        "reveal": "always", // 始终显示终端输出
+        "clear": true // 每次运行前清空终端
+      },
+      "problemMatcher": [] // 如果不需要匹配编译器问题，可以留空
     }
   ]
 }
