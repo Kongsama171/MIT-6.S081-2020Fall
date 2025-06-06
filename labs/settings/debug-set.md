@@ -24,18 +24,34 @@ sudo apt-get install gdb-multiarch
 sudo apt-get install clangd bear
 ```
 
-1. 运行```bear make qemu```。将生成的```compile_commands.json```放入到```.vscode```文件夹中。重启vscode
+2. 运行```bear make qemu```。将生成的```compile_commands.json```放入到```.vscode```文件夹中。重启vscode
 
 ### 自动格式化配置
 
-1. 安装clang-format插件（自动格式化用）
+1. 安装`clang-format`插件（自动格式化用）
 
 <image src="./images/format.png" width="50%">
 
 2. 安装```clang-format```
-```bash
-sudo apt-get install clang-format
-```
+    ```bash
+    sudo apt-get install clang-format
+    ```
+
+3. 后面会发现`clang-format`会在保存时候自动把xv6源码都更改格式。对git很不友好。因此只对自己写的代码进行手动格式化。且由于h文件会被指认为cpp格式，因此需要在`.vscode`文件夹下创建`settings.json`
+    ```c
+    // .vscode/settings.json
+    {
+        "files.associations": {
+            "*.h": "c"
+        },
+        "[cpp]": {
+            "editor.defaultFormatter": "xaver.clang-format"
+        },
+        "[c]": { // .h 文件现在被视为 C 文件
+            "editor.defaultFormatter": "xaver.clang-format" // 也用 clang-format 格式化 C 文件
+        }
+    }
+    ```
 
 ### debug配置
 
@@ -91,6 +107,29 @@ sudo apt-get install clang-format
 {
   "version": "2.0.0",
   "tasks": [
+    {
+      "label": "xv6debugbuild-onecpu",
+      "type": "shell",
+      "isBackground": true,
+      "command": "make clean && make CPUS=1 qemu-gdb",
+      "problemMatcher": [
+        {
+          "pattern": [
+            {
+              "regexp": ".",
+              "file": 1,
+              "location": 2,
+              "message": 3
+            }
+          ],
+          "background": {
+            "beginsPattern": ".*Now run 'gdb' in another window.",
+            // 要对应编译成功后,一句echo的内容. 此处对应 Makefile Line:170
+            "endsPattern": "."
+          }
+        }
+      ]
+    },
     {
       "label": "xv6debugbuild",
       "type": "shell",
